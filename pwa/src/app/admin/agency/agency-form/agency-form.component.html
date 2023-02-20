@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Agence</h2>
+<form [formGroup]="agencyForm" (ngSubmit)="onFormSubmit()">
+    <mat-dialog-content class="mat-typography">
+        <mat-form-field appearance="outline">
+            <mat-label>Libellé</mat-label>
+            <input matInput type="text" placeholder="Agence Paris" formControlName="label">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Code</mat-label>
+            <input matInput type="text" placeholder="3030" formControlName="code">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Région</mat-label>
+            <mat-select formControlName="region" (selectionChange)="regionChange($event.value)">
+                <mat-option *ngFor="let val of regions" [value]="val.id">{{val.label}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Territoire</mat-label>
+            <mat-select formControlName="territory">
+                <mat-option *ngFor="let val of territories" [value]="val.id">{{val.label}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-slide-toggle ngModel name="isActive">Active</mat-slide-toggle>
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-raised-button [mat-dialog-close]="false" type="button" color="accent" >Annuler</button>
+        <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial color="primary" type="submit">{{data ? 'Modifier' : 'Enregistrer'}}</button>
+    </mat-dialog-actions>
+</form>

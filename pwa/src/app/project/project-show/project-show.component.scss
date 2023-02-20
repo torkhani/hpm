@@ -1,0 +1,38 @@
+.project-container {
+    display: flex;
+    align-items: flex-start;
+    overflow: visible;
+}
+
+.project-overview {
+    width: 75%;
+    flex-grow: 1;
+}
+.project-sidebar {
+    top: 35px;
+    position: sticky;
+    font-size: 13px;
+    width: 24%;
+    position: sticky;
+    top: 0;
+    padding-left: 25px;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.tab-content {
+    margin-top: 16px;
+}
+
+mat-expansion-panel {
+    margin-bottom: 16px !important;
+}
+
+button {
+    margin: 15px 0;
+}
+ul {
+    padding: 0;
+    list-style-type: none;
+}

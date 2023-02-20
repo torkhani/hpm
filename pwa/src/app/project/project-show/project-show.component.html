@@ -1,0 +1,106 @@
+
+<div class="project-container">
+    <div class="project-overview">
+        <nav mat-tab-nav-bar >
+            <a mat-tab-link 
+               (click)="activeLink = 'suivi'"
+               [active]="true"> Suivi de la demande </a>
+            <a mat-tab-link 
+               (click)="activeLink = 'info'"
+               [active]="false"> Détail de la demande </a>
+            <a mat-tab-link 
+               (click)="activeLink = 'test'"
+               [active]="false"> Espace d'échanges </a>
+            <a mat-tab-link 
+               (click)="activeLink = 'test'"
+               [active]="false"> Pièces justificatives </a>
+            <a mat-tab-link 
+               (click)="activeLink = 'test'"
+               [active]="false"> Historique </a>
+          </nav>
+          <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+
+        <div class="tab-content">
+            <router-outlet>
+            </router-outlet>
+        </div>
+    </div>
+    <div class="project-sidebar">
+        <button mat-raised-button color="warn">CLÔTURER LE DOSSIER</button>
+            <mat-expansion-panel [expanded]="true">
+                <ul class="downdropwidj-menu first-bloc">
+                    <li>Réf. Partenaire : CI-A-20933860</li>
+                    <li>Réf. Banque : N0053094882889093</li>
+                    <br>
+                    <li>Date de création : 29/11/2019 09:08:36</li>
+                    <li>Date de modification : 29/11/2019 09:12:14 </li>
+                    <br>
+                    <li>Etape du dossier : Contrôles préalables à la prise en charge</li>
+                    <li>Statut du dossier : <div class="attentwork">En Cours</div></li>
+                    <li>Action attendue de : <span class="attentwork">Banque</span></li>
+                </ul>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                    Emprunteur(s)
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ul class="downdropwidj-menu">
+                    <li>Emprunteur <div class="widjetcoltex">
+            MME NOEMIE                             DUPUIS                            <br>
+            Né(e) le 10/10/1986<br>
+            à Nimes <br>
+            <br>Téléphone(s) :<br>
+            0631512855<br>0631512855<br>0631512855<br><br>E-mail : noemie.vauthelin@gmail.com                        </div>
+    </li>
+                        <li>Co-emprunteur <div class="widjetcoltex">
+            M. QUENTIN                             DUPUIS                            <br>
+            Né(e) le 22/07/1985<br>
+            à eaubonne <br>
+            <br>Téléphone(s) :<br>
+                                    </div>
+    </li>
+            </ul>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Contact banque
+                </mat-panel-title>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Agence
+                </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ul class="downdropwidj-menu" id="addRattachement">
+                    <li>
+                        Région: Banque En Ligne                </li>
+                    <li>
+                        Territoire:                 </li>
+                    <li>
+                        Agence:                 </li>
+                                        <script src="/js/dossier/dossier/gestion-rattachement.js"></script>
+                        <div class="block btn-trigger">
+                            <br>
+                            <div style="margin-top: 20px">
+                                <button class="button-base button-green set-rattachement" data-target="#setRattachement" data-url="/dossier/5041/gestionRattachement">
+                                    Modifier
+                                </button>
+                            </div>
+                        </div>
+    
+                                </ul>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Contact partenaire
+                </mat-panel-title>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+    </div>
+</div>

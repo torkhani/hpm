@@ -1,0 +1,54 @@
+<mat-toolbar>
+    <button mat-icon-button *ngIf="sidenav.mode === 'over'" (click)="sidenav.toggle()">
+        <mat-icon *ngIf="!sidenav.opened">
+          menu
+      </mat-icon>
+      <mat-icon *ngIf="sidenav.opened">
+          close
+      </mat-icon>    
+    </button>
+
+    <a routerLink="/"><img src="/assets/images/logo.png"/></a>
+    <span class="example-spacer"></span>
+    <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+      <mat-icon>person</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>Mon profile</button>
+      <button mat-menu-item>Déconnexion</button>
+    </mat-menu>
+    <a mat-icon-button href="/admin/region" class="example-icon">
+      <mat-icon>settings</mat-icon>
+    </a>
+</mat-toolbar>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav mode="side" #sidenav="matSidenav">
+      <button mat-button class="menu-button">
+          <mat-icon>star</mat-icon>
+          <span>Prioritaire</span>
+      </button>
+      <button mat-button class="menu-button">
+          <mat-icon>groups</mat-icon>
+          <span>Actions à traiter Banque</span>
+      </button>
+      <button mat-button class="menu-button">
+          <mat-icon>groups</mat-icon>
+          <span>Acions à traiter Partenaire</span>
+      </button>
+
+      <button mat-button class="menu-button">
+          <mat-icon>handshake</mat-icon>
+          <span>Dossier clos</span>
+      </button>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="content">
+      <app-title></app-title>
+  
+      <router-outlet>
+        <app-spinner></app-spinner>
+      </router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

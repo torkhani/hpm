@@ -1,0 +1,68 @@
+mat-expansion-panel {
+    margin-bottom: 16px !important;
+}
+
+.header {
+    background-color: #f6f6f6;
+    border: solid 1px #d8d8d8;
+    padding: 5px 20px;
+    height: 70px;
+    font-size: 12px;
+}
+
+.titletap {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333333;
+}
+
+.libeletap {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.status {
+    background-color: #ffffff;
+    border: solid 1px #d8d8d8;
+    min-height: 5em;
+    border-top: 0px;
+    padding: 20px;
+}
+
+.recap-etape {
+    font-style: italic;
+    color: #7e7e7e;
+}
+
+.validawork {
+    color: #00b99f;
+    font-weight: bold;
+    margin: 0px 5px;
+    display: inline-block;
+}
+
+.block {
+    display: flex;
+    display: inline-flex;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+.left {
+    width: 20%;
+    border: 1px solid #d8d8d8;
+    padding: 1em;
+    border-right: 0px;
+    border-top: 0px;
+}
+
+.right {
+    width: 80%;
+    float: left;
+    border: 1px solid #d8d8d8;
+    padding: 1em;
+}
+
+.sous-etape-container {
+    margin-bottom: 1em;
+}

@@ -1,0 +1,125 @@
+
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        INFORMATIONS DU DOSSIER
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="suividemandbox">Référence dossier partenaire
+                    <div class="charmamintex ">{{project.externalReference}}</div>
+                </div>
+                <div class="suividemandbox">Référence dossier banque
+                    <div class="charmamintex ">{{project.reference}}</div>
+                </div>
+                <div class="suividemandbox">Marque destinataire
+                    <div class="charmamintex ">Hello bank!</div>
+                </div>
+                <div class="suividemandbox">Direction régionale BNP ParisBas
+                    <div class="charmamintex ">08082 - Banque En Ligne</div>
+                </div>
+                <div class="suividemandbox">Groupe d'agences
+                    <div class="charmamintex ">N/A</div>
+                </div>
+                <div class="suividemandbox">Votre interlocuteur
+                    <div class="charmamintex ">Hellobank Netcreditimmo</div>
+                </div>
+                    <div class="suividemandbox">Code partenaire
+                    <div class="charmamintex ">N0053 - MEILLEURTAUX POUR HELLO BANK</div>
+                </div>
+                <div class="suividemandbox">Entité partenaire
+                    <div class="charmamintex ">Plateforme - Le Havre</div>
+                </div>
+        
+                <div class="suividemandbox">Remarques Partenaire
+                    <div class="charmamintex ">meilleurtaux.com canal internet  pas de frais de courtage  Réseau Hello bank   Projet de rachat de crédit fait initialement à la banque postale . but des clients serait de gagner en année Le couple a eu une offre de la banque postale qui propose un taux de 1.47% sur 19 ans  1.50% ha sur 19 ans à la caisse d’épargne</div>
+                </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        INFORMATIONS CLIENT
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngFor="let borrower of project.profile.borrowers">
+                    <app-borrower [borrower]="borrower"></app-borrower>
+                </div>
+                
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        SYNTHÈSE DU PROJET
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="suividemandbox">Type de prêt
+                    <div class="charmamintex ">Prêt amortissable taux fixe</div>
+                </div>
+                <div class="suividemandbox">Type d'opération
+                    <div class="charmamintex ">RACHAT DE PRETS</div>
+                </div>
+                <div class="suividemandbox">Usage du bien
+                    <div class="charmamintex ">N/A</div>
+                </div>
+                <div class="suividemandbox">Montant (hors frais)
+                    <div class="charmamintex ">347 454,00 €</div>
+                </div>
+                <div class="suividemandbox">Durée totale
+                    <div class="charmamintex ">204 mois</div>
+                </div>
+                <div class="suividemandbox">Type de remboursement
+                    <div class="charmamintex ">Amortissable</div>
+                </div>
+                    <div class="suividemandbox">Type de taux
+                    <div class="charmamintex ">Fixe modulable</div>
+                </div>
+                <div class="suividemandbox">Taux hors assurance
+                    <div class="charmamintex ">0.85%</div>
+                </div>
+        
+                <div class="suividemandbox">Frais de dossier
+                    <div class="charmamintex ">250,00 €</div>
+                </div>
+                <div class="suividemandbox">Assurance emprunteur
+                    <div class="charmamintex ">N/A</div>
+                </div>
+                <div class="suividemandbox">Assurance co-emprunteur
+                    <div class="charmamintex ">N/A</div>
+                </div>
+                <div class="suividemandbox">Formule assurance emprunteur
+                    <div class="charmamintex ">N/A</div>
+                </div>
+                <div class="suividemandbox">Formule assurance co-emprunteur
+                    <div class="charmamintex ">N/A</div>
+                </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        GARANTIE(S)
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="suividemandbox">Garantie(s)
+                    <div class="charmamintex ">Crédit logement</div>
+                </div>
+
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        CAPACITÉ DE REMBOURSEMENT
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="suividemandbox">Apport Personnel
+                    <div class="charmamintex ">0.00 €</div>
+                </div>
+                <div class="suividemandbox">Taux d'endettement après opération
+                    <div class="charmamintex ">32,93 % </div>
+                </div>
+                <div class="suividemandbox">Reste à vivre mensuel après opération
+                    <div class="charmamintex ">4 123,62 €</div>
+                </div>
+            </mat-expansion-panel>
+
+
+
+        

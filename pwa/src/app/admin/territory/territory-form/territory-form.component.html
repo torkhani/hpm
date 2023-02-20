@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>Territoire</h2>
+<form [formGroup]="territoryForm" (ngSubmit)="onFormSubmit()">
+    <mat-dialog-content class="mat-typography">
+        <mat-form-field appearance="outline">
+            <mat-label>Libellé</mat-label>
+            <input matInput type="text" placeholder="Ex. Grand Est" formControlName="label">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Code</mat-label>
+            <input matInput type="text" placeholder="Ex. 8056" formControlName="code">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Région</mat-label>
+            <mat-select formControlName="region">
+                <mat-option *ngFor="let val of regions" [value]="val.id">{{val.label}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-slide-toggle name="isActive">Active</mat-slide-toggle>
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-raised-button [mat-dialog-close]="false" type="button" color="accent" >Annuler</button>
+        <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial color="primary" type="submit">{{data ? 'Modifier' : 'Enregistrer'}}</button>
+    </mat-dialog-actions>
+</form>

@@ -1,0 +1,55 @@
+<mat-card class="result">
+    <mat-card-content>
+        <section class="example-section">
+            <mat-slide-toggle
+                class="example-margin"
+                color="primary"
+                checked="false"
+                disabled="false">
+                Ce dossier n'est pas prioritaire
+            </mat-slide-toggle>
+
+            <mat-vertical-stepper [linear]="false" #stepper animationDuration="1000">
+                <mat-step [stepControl]="firstFormGroup">
+                  <form [formGroup]="firstFormGroup">
+                    <ng-template matStepLabel>RÉCEPTION DE LA DEMANDE</ng-template>
+                    <mat-form-field>
+                      <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+                    </mat-form-field>
+                    <div>
+                      <button mat-button matStepperNext>Next</button>
+                    </div>
+                  </form>
+                </mat-step>
+                <mat-step [stepControl]="secondFormGroup">
+                  <form [formGroup]="secondFormGroup">
+                    <ng-template matStepLabel>CONTRÔLES PRÉALABLES À LA PRISE EN CHARGE</ng-template>
+                    <mat-form-field>
+                      <input matInput placeholder="Address" formControlName="secondCtrl" required>
+                    </mat-form-field>
+                    <div>
+                      <button mat-button matStepperPrevious>Back</button>
+                      <button mat-button matStepperNext>Next</button>
+                    </div>
+                  </form>
+                </mat-step>
+                <mat-step>
+                    <ng-template matStepLabel>PRISE DE RDV CLIENT</ng-template>
+                    You are now done.
+                    <div>
+                      <button mat-button matStepperPrevious>Back</button>
+                      <button mat-button (click)="stepper.reset()">Reset</button>
+                    </div>
+                  </mat-step>
+                <mat-step>
+                  <ng-template matStepLabel>FINALISATION DU DOSSIER</ng-template>
+                  You are now done.
+                  <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button (click)="stepper.reset()">Reset</button>
+                  </div>
+                </mat-step>
+              </mat-vertical-stepper>
+        </section>
+    </mat-card-content>
+  </mat-card>
