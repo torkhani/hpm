@@ -75,10 +75,6 @@ final class ItemNormalizer extends AbstractItemNormalizer
             return parent::normalize($object, $format, $context);
         }
 
-        if (!isset($context['cache_key'])) {
-            $context['cache_key'] = $this->getCacheKey($format, $context);
-        }
-
         if ($this->resourceClassResolver->isResourceClass($resourceClass)) {
             $resourceClass = $this->resourceClassResolver->getResourceClass($object, $context['resource_class'] ?? null);
         }
@@ -91,6 +87,10 @@ final class ItemNormalizer extends AbstractItemNormalizer
         $iri = $this->iriConverter->getIriFromResource($object, UrlGeneratorInterface::ABS_PATH, $context['operation'] ?? null, $context);
         $context['iri'] = $iri;
         $context['api_normalize'] = true;
+
+        if (!isset($context['cache_key'])) {
+            $context['cache_key'] = $this->getCacheKey($format, $context);
+        }
 
         $data = parent::normalize($object, $format, $context);
         if (!\is_array($data)) {
@@ -192,12 +192,12 @@ final class ItemNormalizer extends AbstractItemNormalizer
      * @see http://jsonapi.org/format/#document-resource-object-linkage
      *
      * @throws RuntimeException
-     * @throws NotNormalizableValueException
+     * @throws UnexpectedValueException
      */
     protected function denormalizeRelation(string $attributeName, ApiProperty $propertyMetadata, string $className, mixed $value, ?string $format, array $context): object
     {
         if (!\is_array($value) || !isset($value['id'], $value['type'])) {
-            throw new NotNormalizableValueException('Only resource linkage supported currently, see: http://jsonapi.org/format/#document-resource-object-linkage.');
+            throw new UnexpectedValueException('Only resource linkage supported currently, see: http://jsonapi.org/format/#document-resource-object-linkage.');
         }
 
         try {
@@ -229,7 +229,6 @@ final class ItemNormalizer extends AbstractItemNormalizer
             }
 
             $normalizedRelatedObject = $this->serializer->normalize($relatedObject, $format, $context);
-            // @phpstan-ignore-next-line throwing an explicit exception helps debugging
             if (!\is_string($normalizedRelatedObject) && !\is_array($normalizedRelatedObject) && !$normalizedRelatedObject instanceof \ArrayObject && null !== $normalizedRelatedObject) {
                 throw new UnexpectedValueException('Expected normalized relation to be an IRI, array, \ArrayObject or null');
             }

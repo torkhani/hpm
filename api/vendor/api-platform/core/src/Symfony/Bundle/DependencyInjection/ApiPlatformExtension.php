@@ -32,14 +32,17 @@ use ApiPlatform\GraphQl\Type\Definition\TypeInterface as GraphQlTypeInterface;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\State\ProviderInterface;
+use ApiPlatform\Symfony\GraphQl\Resolver\Factory\DataCollectorResolverFactory;
 use ApiPlatform\Symfony\Validator\Metadata\Property\Restriction\PropertySchemaRestrictionMetadataInterface;
 use ApiPlatform\Symfony\Validator\ValidationGroupsGeneratorInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use phpDocumentor\Reflection\DocBlockFactoryInterface;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -263,7 +266,7 @@ final class ApiPlatformExtension extends Extension implements PrependExtensionIn
         $container->getDefinition('api_platform.metadata.resource_extractor.xml')->replaceArgument(0, $xmlResources);
         $container->getDefinition('api_platform.metadata.property_extractor.xml')->replaceArgument(0, $xmlResources);
 
-        if (interface_exists(DocBlockFactoryInterface::class)) {
+        if (class_exists(PhpDocParser::class) || interface_exists(DocBlockFactoryInterface::class)) {
             $loader->load('metadata/php_doc.xml');
         }
 
@@ -465,6 +468,9 @@ final class ApiPlatformExtension extends Extension implements PrependExtensionIn
 
         $graphiqlEnabled = $enabled && $this->isConfigEnabled($container, $config['graphql']['graphiql']);
         $graphqlPlayGroundEnabled = $enabled && $this->isConfigEnabled($container, $config['graphql']['graphql_playground']);
+        if ($graphqlPlayGroundEnabled) {
+            trigger_deprecation('api-platform/core', '3.1', 'GraphQL Playground is deprecated and will be removed in API Platform 4.0. Only GraphiQL will be available in the future. Set api_platform.graphql.graphql_playground to false in the configuration to remove this deprecation.');
+        }
 
         $container->setParameter('api_platform.graphql.enabled', $enabled);
         $container->setParameter('api_platform.graphql.graphiql.enabled', $graphiqlEnabled);
@@ -499,6 +505,34 @@ final class ApiPlatformExtension extends Extension implements PrependExtensionIn
             ->addTag('api_platform.graphql.type');
         $container->registerForAutoconfiguration(ErrorHandlerInterface::class)
             ->addTag('api_platform.graphql.error_handler');
+
+        if (!$container->getParameter('kernel.debug')) {
+            return;
+        }
+
+        $requestStack = new Reference('request_stack', ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        $collectionDataCollectorResolverFactory = (new Definition(DataCollectorResolverFactory::class))
+            ->setDecoratedService('api_platform.graphql.resolver.factory.collection')
+            ->setArguments([new Reference('api_platform.graphql.data_collector.resolver.factory.collection.inner'), $requestStack]);
+
+        $itemDataCollectorResolverFactory = (new Definition(DataCollectorResolverFactory::class))
+            ->setDecoratedService('api_platform.graphql.resolver.factory.item')
+            ->setArguments([new Reference('api_platform.graphql.data_collector.resolver.factory.item.inner'), $requestStack]);
+
+        $itemMutationDataCollectorResolverFactory = (new Definition(DataCollectorResolverFactory::class))
+            ->setDecoratedService('api_platform.graphql.resolver.factory.item_mutation')
+            ->setArguments([new Reference('api_platform.graphql.data_collector.resolver.factory.item_mutation.inner'), $requestStack]);
+
+        $itemSubscriptionDataCollectorResolverFactory = (new Definition(DataCollectorResolverFactory::class))
+            ->setDecoratedService('api_platform.graphql.resolver.factory.item_subscription')
+            ->setArguments([new Reference('api_platform.graphql.data_collector.resolver.factory.item_subscription.inner'), $requestStack]);
+
+        $container->addDefinitions([
+            'api_platform.graphql.data_collector.resolver.factory.collection' => $collectionDataCollectorResolverFactory,
+            'api_platform.graphql.data_collector.resolver.factory.item' => $itemDataCollectorResolverFactory,
+            'api_platform.graphql.data_collector.resolver.factory.item_mutation' => $itemMutationDataCollectorResolverFactory,
+            'api_platform.graphql.data_collector.resolver.factory.item_subscription' => $itemSubscriptionDataCollectorResolverFactory,
+        ]);
     }
 
     private function registerCacheConfiguration(ContainerBuilder $container): void
@@ -567,23 +601,27 @@ final class ApiPlatformExtension extends Extension implements PrependExtensionIn
 
         $loader->load('http_cache_purger.xml');
 
-        $definitions = [];
-        foreach ($config['http_cache']['invalidation']['varnish_urls'] as $key => $url) {
-            $definition = new Definition(ScopingHttpClient::class, [new Reference('http_client'), $url, ['base_uri' => $url] + $config['http_cache']['invalidation']['request_options']]);
-            $definition->setFactory([ScopingHttpClient::class, 'forBaseUri']);
-
-            $definitions[] = $definition;
+        foreach ($config['http_cache']['invalidation']['scoped_clients'] as $client) {
+            $definition = $container->getDefinition($client);
+            $definition->addTag('api_platform.http_cache.http_client');
         }
 
-        foreach (['api_platform.http_cache.purger.varnish.ban', 'api_platform.http_cache.purger.varnish.xkey'] as $serviceName) {
-            $container->findDefinition($serviceName)->setArguments([
-                $definitions,
-                $config['http_cache']['invalidation']['max_header_length'],
-            ]);
+        if (!($urls = $config['http_cache']['invalidation']['urls'])) {
+            $urls = $config['http_cache']['invalidation']['varnish_urls'];
+        }
+
+        foreach ($urls as $key => $url) {
+            $definition = new Definition(ScopingHttpClient::class, [new Reference('http_client'), $url, ['base_uri' => $url] + $config['http_cache']['invalidation']['request_options']]);
+            $definition->setFactory([ScopingHttpClient::class, 'forBaseUri']);
+            $definition->addTag('api_platform.http_cache.http_client');
+            $container->setDefinition('api_platform.invalidation_http_client.'.$key, $definition);
         }
 
         $serviceName = $config['http_cache']['invalidation']['purger'];
-        $container->setAlias('api_platform.http_cache.purger', $serviceName);
+
+        if (!$container->hasDefinition('api_platform.http_cache.purger')) {
+            $container->setAlias('api_platform.http_cache.purger', $serviceName);
+        }
     }
 
     /**
@@ -644,6 +682,8 @@ final class ApiPlatformExtension extends Extension implements PrependExtensionIn
         if (!$this->isConfigEnabled($container, $config['mercure'])) {
             return;
         }
+
+        $container->setParameter('api_platform.mercure.include_type', $config['mercure']['include_type']);
 
         $loader->load('mercure.xml');
 

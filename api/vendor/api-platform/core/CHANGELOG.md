@@ -1,5 +1,92 @@
 # Changelog
 
+## v3.1.3
+
+### Bug fixes
+
+* [dcc4733d5](https://github.com/api-platform/core/commit/dcc4733d526ab941aa40afe1b7a645ef36bf68a3) fix(serializer): reset cache key on collection items CVE-2023-25575
+* [1170c3846](https://github.com/api-platform/core/commit/1170c384636bbad999f037cedcdb4190a8028360) fix(metadata): map uriVariables to uriTemplate vars (#5410)
+* [d1d139aa4](https://github.com/api-platform/core/commit/d1d139aa42caf3a008b0dbb034bb23d77cfcc024) fix(metadata): in xml resource extractor > building request body content values (#5419)
+* [ea71416bb](https://github.com/api-platform/core/commit/ea71416bb527579b4f49674161bc1de47a14ee12) fix(openapi): allow overriding of openapi responses (#5393)
+* [ff3255c9e](https://github.com/api-platform/core/commit/ff3255c9ebefa0d25eba7e39c45c991ee0e4278f) fix(serializer): check which instance of NameConverterInstance is used (#5398)
+
+### Features
+
+* [d3783d611](https://github.com/api-platform/core/commit/d3783d611c74c4cc0010ad078b7f22028c7df26e) feat(metadata): class IdentifiersExtractor now handles enums (#5411)
+
+## v3.1.2
+
+### Bug fixes
+
+* [85209558c](https://github.com/api-platform/core/commit/85209558ce5906b3a6e4218d7740231968446ce6) fix(symfony): missing http clients varnish purger (#5383)
+* [a76ebf271](https://github.com/api-platform/core/commit/a76ebf27196c9d7d92997d5f100268aa38438060) fix: missing parent construct calls with named arguments (#5385)
+
+## v3.1.1
+
+### Bug fixes
+
+* [186cd69d4](https://github.com/api-platform/core/commit/186cd69d446133fd19f321ac6c8a355ba98658cf) fix(symfony): wrong purger clients type (#5373)
+* [4eb0ab5a9](https://github.com/api-platform/core/commit/4eb0ab5a936c2ff95baee1421c3156ce707fbae6) fix(openapi): fix openapi requestbody decoration (#5377)
+* [78ae12298](https://github.com/api-platform/core/commit/78ae122980532d91df69a412d17e05488a379cd1) fix(metadata): allow custom http status code for put (#5375)
+* [a5fb2aa28](https://github.com/api-platform/core/commit/a5fb2aa2850bbc2494137ea65549a0299500e659) fix(metadata): defaults extra properties (#5362)
+* [f7c70b17d](https://github.com/api-platform/core/commit/f7c70b17d195a311e7a4a923de224d6663cfdb50) fix(graphql): name and key should be the same for an enum without Enum suffix in class name (#5369)
+
+## v3.1.0
+
+### Bug fixes
+
+* [7f09a2640](https://github.com/api-platform/core/commit/7f09a2640c41974dc6fbf361782e2cee41692426) fix(jsonschema): remove @id @type @context from input schema  (#5267)
+* [7fa9ca5a7](https://github.com/api-platform/core/commit/7fa9ca5a7097535de4569c5e118e4d4f97984504) fix: do not use api_graphql_graphiql route when graphiQl is disabled because it won’t exist (#5266)
+* [9f5a408a1](https://github.com/api-platform/core/commit/9f5a408a1c20b9268a6dc37abb3bc2b1bc38e49d) fix(metadata): attributes parameter order (#5317)
+* [d0fcd70c3](https://github.com/api-platform/core/commit/d0fcd70c34e79e1b072032a847b3a6e94f63db72) fix(graphql): remove inline styles and add twig blocks to aid overriding templates in strict CSP environments (#5251)
+
+### Features
+
+* [3a845f1fb](https://github.com/api-platform/core/commit/3a845f1fb0ee80d6a8dc547a2aa97633fcda0830) fix(symfony): use `swagger.api_keys` with a key to handle multiple authorizations (#4691)
+* [06185b7c9](https://github.com/api-platform/core/commit/06185b7c96eec95328fcd06375a74abc91564477) feat: add groups filter whitelist info to swagger (#5244)
+* [10da65f67](https://github.com/api-platform/core/commit/10da65f67712b4acd21561ddf573e9b9a0b0d74e) feat: support collect denormalization errors (#5170)
+* [36d930eda](https://github.com/api-platform/core/commit/36d930edad8cd733a977d0327b850fd41df6fee6) feat(graphql): enable profiler panel when using graphql (#5072)
+* [471185d3e](https://github.com/api-platform/core/commit/471185d3ef86c26ec29a037c4ed615b6088197cf) feat(symfony): agnostic cache purger + souin support (#5273)
+* [8744857a3](https://github.com/api-platform/core/commit/8744857a3a9c7cba99440405ad057b1a55952eff) feat: add GraphQL enum support (#5199)
+* [8c8a91b4a](https://github.com/api-platform/core/commit/8c8a91b4a46c6330346b7858271fc8a29e2a8fa1) feat(jsonschema): serialization context on JsonSchema (#4860)
+* [902b1354f](https://github.com/api-platform/core/commit/902b1354f84c75cf5cc9d7199998733f6157a998) feat: better separation of entity class and resource (#5275)
+* [a558c94d0](https://github.com/api-platform/core/commit/a558c94d0b6e0607edee3ab243f7b746976ed422) feat: add context to XML parsing errors (#5335)
+* [a828af0e8](https://github.com/api-platform/core/commit/a828af0e8eb9281d2ebf59692e5722bf08727861) feat: use phpdoc-parser instead of phpdocumentor (#5214)
+* [bd361bbed](https://github.com/api-platform/core/commit/bd361bbed77ad367e9aaf6bf82a2968627f39513) feat(doctrine): add link factory (#5345)
+* [bde59ba12](https://github.com/api-platform/core/commit/bde59ba121bcf99f4207a34dd5d09da8a6b2c5cc) feat: spec-compliant PUT method (#4996)
+* [c145ec700](https://github.com/api-platform/core/commit/c145ec700116be11afebff28f4d4b115cd45bb41) feat(openapi): add ApiResource::openapi and deprecate openapiContext (#5254)
+* [e5f1be056](https://github.com/api-platform/core/commit/e5f1be0561efe6fd90933b381f605bff81486aac) feat: add @type property on mercure delete update (#2688)
+* [f1ecc30a3](https://github.com/api-platform/core/commit/f1ecc30a38e50536a2a65ae85ef23eb6dc095af3) feat(openapi): add backed enum support (#5120)
+
+### Backward compatibility
+
+- only use named arguments on metadata attributes (`Get`, `Query`, `Operation`, `ApiProperty` etc.) as we don't guarantee the backward compatibility on positional arguments 
+
+## v3.0.12
+
+### Bug fixes
+
+* [5723d6836](https://github.com/api-platform/core/commit/5723d68369722feefeb11e42528d9580db5dd0fb) fix(serializer): reset cache key on collection items CVE-2023-25575
+* [1983089d9](https://github.com/api-platform/core/commit/1983089d9c2de4bb9fc36c60929aff538af89b8e) fix(metadata): reader should be nullable (#5378)
+* [80aeb3158](https://github.com/api-platform/core/commit/80aeb3158311ff4ce9ad28b7f813dedee7744828) fix(symfony): autoconfigure elasticsearch extension (#5379)
+
+## v3.0.11
+
+### Bug fixes
+
+* [0154bf13c](https://github.com/api-platform/core/commit/0154bf13c3aa99b6bfe2c17c875a51e876aca43f) fix(metadata): homogenize operations constructor (#5344)
+    Note: we made clear that we are supporting only named arguments on our Attributes. We do not support backward compatibility on positional arguments.
+* [53cb25fab](https://github.com/api-platform/core/commit/53cb25fab0fcec2d336590c7e82e1c6a8728d00a) fix(symfony): annotation reader argument optional (#5358)
+* [722802c13](https://github.com/api-platform/core/commit/722802c13200179cd9ce7b2812738471a9340f27) fix(graphql): usable YAML/XML configuration (#5333) 
+    Note: `paginationViaCursor` was removed from GraphQl operations as it had no behavior
+* [937786efe](https://github.com/api-platform/core/commit/937786efeab77f939d67973d7b4e7bc4fd8eec17) fix(metadata): extract identifier using `Link::toProperty` (#5352)
+
+## v3.0.10
+
+### Bug fixes
+
+* [ec67b3f47](https://github.com/api-platform/core/commit/ec67b3f4745e5907f6b199d07c59af946f47a35d) fix: fix argument resolver error (#5342)
+
 ## v3.0.9
 
 ### Bug fixes
@@ -138,6 +225,32 @@ Breaking changes:
 * Metadata: `Patch` is added to the automatic CRUD
 * Symfony: generated route names and operation names changed, route naming can be changed directly within metadata
     
+## v2.7.10
+
+### Bug fixes
+
+* [5723d6836](https://github.com/api-platform/core/commit/5723d68369722feefeb11e42528d9580db5dd0fb) fix(serializer): reset cache key on collection items CVE-2023-25575
+
+## v2.7.9
+
+### Bug fixes
+
+* [1983089d9](https://github.com/api-platform/core/commit/1983089d9c2de4bb9fc36c60929aff538af89b8e) fix(metadata): reader should be nullable (#5378)
+* [80aeb3158](https://github.com/api-platform/core/commit/80aeb3158311ff4ce9ad28b7f813dedee7744828) fix(symfony): autoconfigure elasticsearch extension (#5379)
+
+## v2.7.8
+
+### Bug fixes
+
+* [b15a97d7f](https://github.com/api-platform/core/commit/b15a97d7fa65ec78934e24a30289cb499d4365e7) fix(symfony): autoconfigure elasticsearch extension (#5376)
+* [cbe7355d1](https://github.com/api-platform/core/commit/cbe7355d184d75465a5e5acc51f9c4f24ab5b52c) fix(metadata): annotation reader should be nullable
+
+## v2.7.7
+
+### Bug fixes
+
+* [53cb25fab](https://github.com/api-platform/core/commit/53cb25fab0fcec2d336590c7e82e1c6a8728d00a) fix(symfony): annotation reader argument optional (#5358)
+
 ## v2.7.6
 
 ### Bug fixes

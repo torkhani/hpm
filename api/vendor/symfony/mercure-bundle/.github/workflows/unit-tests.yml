@@ -24,6 +24,7 @@ jobs:
           - "7.4"
           - "8.0"
           - "8.1"
+          - "8.2"
         operating-system:
           - "ubuntu-latest"
 
@@ -47,9 +48,9 @@ jobs:
           key: "php-${{ matrix.php-version }}-${{ matrix.operating-system }}"
           restore-keys: "php-${{ matrix.php-version }}-${{ matrix.operating-system }}"
 
-      - name: "removing symfony/ux-turbo-mercure on PHP 7.1"
+      - name: "removing symfony/ux-turbo on PHP 7.1"
         if: ${{ matrix.php-version == '7.1' }}
-        run: "composer remove symfony/ux-turbo-mercure --no-update --dev"
+        run: "composer remove symfony/ux-turbo --no-update --dev"
 
       - name: "installing lowest dependencies"
         if: ${{ matrix.dependencies == 'lowest' }}
@@ -59,7 +60,7 @@ jobs:
         if: ${{ matrix.dependencies == 'highest' }}
         run: "composer update --no-interaction --no-progress"
 
-      - name: "installing phpunit"
+      - name: "installing PHPUnit"
         run: "php vendor/bin/simple-phpunit install"
 
       - name: "running unit tests"

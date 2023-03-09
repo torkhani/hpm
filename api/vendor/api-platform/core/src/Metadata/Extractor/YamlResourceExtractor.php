@@ -13,14 +13,13 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Extractor;
 
+use ApiPlatform\Elasticsearch\State\Options;
 use ApiPlatform\Exception\InvalidArgumentException;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\GraphQl\DeleteMutation;
-use ApiPlatform\Metadata\GraphQl\Mutation;
-use ApiPlatform\Metadata\GraphQl\Query;
-use ApiPlatform\Metadata\GraphQl\QueryCollection;
-use ApiPlatform\Metadata\GraphQl\Subscription;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model\ExternalDocumentation;
+use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
+use ApiPlatform\OpenApi\Model\RequestBody;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -106,7 +105,8 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             'types' => $this->buildArrayValue($resource, 'types'),
             'cacheHeaders' => $this->buildArrayValue($resource, 'cacheHeaders'),
             'hydraContext' => $this->buildArrayValue($resource, 'hydraContext'),
-            'openapiContext' => $this->buildArrayValue($resource, 'openapiContext'),
+            'openapiContext' => $this->buildArrayValue($resource, 'openapiContext'), // TODO Remove in 4.0
+            'openapi' => $this->buildOpenapi($resource),
             'paginationViaCursor' => $this->buildArrayValue($resource, 'paginationViaCursor'),
             'exceptionToStatus' => $this->buildArrayValue($resource, 'exceptionToStatus'),
             'defaults' => $this->buildArrayValue($resource, 'defaults'),
@@ -118,6 +118,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             'uriVariables' => $this->buildUriVariables($resource),
             'inputFormats' => $this->buildArrayValue($resource, 'inputFormats'),
             'outputFormats' => $this->buildArrayValue($resource, 'outputFormats'),
+            'stateOptions' => $this->buildStateOptions($resource),
         ]);
     }
 
@@ -153,6 +154,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             'output' => $this->phpize($resource, 'output', 'bool|string'),
             'normalizationContext' => $this->buildArrayValue($resource, 'normalizationContext'),
             'denormalizationContext' => $this->buildArrayValue($resource, 'denormalizationContext'),
+            'collectDenormalizationErrors' => $this->phpize($resource, 'collectDenormalizationErrors', 'bool'),
             'validationContext' => $this->buildArrayValue($resource, 'validationContext'),
             'filters' => $this->buildArrayValue($resource, 'filters'),
             'order' => $this->buildArrayValue($resource, 'order'),
@@ -203,6 +205,36 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
         }
 
         return $uriVariables;
+    }
+
+    private function buildOpenapi(array $resource): bool|OpenApiOperation|null
+    {
+        if (!\array_key_exists('openapi', $resource)) {
+            return null;
+        }
+
+        if (!\is_array($resource['openapi'])) {
+            return $this->phpize($resource, 'openapi', 'bool');
+        }
+
+        $allowedProperties = array_map(fn (\ReflectionProperty $reflProperty): string => $reflProperty->getName(), (new \ReflectionClass(OpenApiOperation::class))->getProperties());
+        foreach ($resource['openapi'] as $key => $value) {
+            $resource['openapi'][$key] = match ($key) {
+                'externalDocs' => new ExternalDocumentation(description: $value['description'] ?? '', url: $value['url'] ?? ''),
+                'requestBody' => new RequestBody(description: $value['description'] ?? '', content: isset($value['content']) ? new \ArrayObject($value['content'] ?? []) : null, required: $value['required'] ?? false),
+                'callbacks' => new \ArrayObject($value ?? []),
+                default => $value,
+            };
+
+            if (\in_array($key, $allowedProperties, true)) {
+                continue;
+            }
+
+            $resource['openapi']['extensionProperties'][$key] = $value;
+            unset($resource['openapi'][$key]);
+        }
+
+        return new OpenApiOperation(...$resource['openapi']);
     }
 
     /**
@@ -271,7 +303,6 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             $data[] = array_merge($datum, [
                 'read' => $this->phpize($operation, 'read', 'bool'),
                 'deserialize' => $this->phpize($operation, 'deserialize', 'bool'),
-                'openapi' => $this->phpize($operation, 'openapi', 'bool'),
                 'validate' => $this->phpize($operation, 'validate', 'bool'),
                 'write' => $this->phpize($operation, 'write', 'bool'),
                 'serialize' => $this->phpize($operation, 'serialize', 'bool'),
@@ -292,44 +323,67 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
         }
 
         $data = [];
-        foreach (['mutations' => Mutation::class, 'queries' => Query::class, 'subscriptions' => Subscription::class] as $type => $class) {
-            if (!\array_key_exists($type, $resource['graphQlOperations'])) {
-                continue;
+        foreach ($resource['graphQlOperations'] as $class => $operation) {
+            if (null === $operation) {
+                $operation = [];
             }
 
-            foreach ($resource['graphQlOperations'][$type] as $operation) {
-                $datum = $this->buildBase($operation);
-                foreach ($datum as $key => $value) {
-                    if (null === $value) {
-                        $datum[$key] = $root[$key];
-                    }
+            if (\array_key_exists('class', $operation)) {
+                if (!\array_key_exists('name', $operation) && \is_string($class)) {
+                    $operation['name'] = $class;
                 }
-
-                $collection = $this->phpize($operation, 'collection', 'bool', false);
-                if (Query::class === $class && $collection) {
-                    $class = QueryCollection::class;
-                }
-
-                $delete = $this->phpize($operation, 'delete', 'bool', false);
-                if (Mutation::class === $class && $delete) {
-                    $class = DeleteMutation::class;
-                }
-
-                $data[] = array_merge($datum, [
-                    'graphql_operation_class' => $class,
-                    'resolver' => $this->phpize($operation, 'resolver', 'string'),
-                    'args' => $operation['args'] ?? null,
-                    'class' => $this->phpize($operation, 'class', 'string'),
-                    'read' => $this->phpize($operation, 'read', 'bool'),
-                    'deserialize' => $this->phpize($operation, 'deserialize', 'bool'),
-                    'validate' => $this->phpize($operation, 'validate', 'bool'),
-                    'write' => $this->phpize($operation, 'write', 'bool'),
-                    'serialize' => $this->phpize($operation, 'serialize', 'bool'),
-                    'priority' => $this->phpize($operation, 'priority', 'integer'),
-                ]);
+                $class = $operation['class'];
             }
+
+            if (empty($class)) {
+                throw new InvalidArgumentException('Missing "class" attribute');
+            }
+
+            if (!class_exists($class)) {
+                throw new InvalidArgumentException(sprintf('Operation class "%s" does not exist', $class));
+            }
+
+            $datum = $this->buildBase($operation);
+            foreach ($datum as $key => $value) {
+                if (null === $value) {
+                    $datum[$key] = $root[$key];
+                }
+            }
+
+            $data[] = array_merge($datum, [
+                'resolver' => $this->phpize($operation, 'resolver', 'string'),
+                'args' => $operation['args'] ?? null,
+                'class' => (string) $class,
+                'read' => $this->phpize($operation, 'read', 'bool'),
+                'deserialize' => $this->phpize($operation, 'deserialize', 'bool'),
+                'validate' => $this->phpize($operation, 'validate', 'bool'),
+                'write' => $this->phpize($operation, 'write', 'bool'),
+                'serialize' => $this->phpize($operation, 'serialize', 'bool'),
+                'priority' => $this->phpize($operation, 'priority', 'integer'),
+                'name' => $this->phpize($operation, 'name', 'string'),
+            ]);
         }
 
         return $data ?: null;
+    }
+
+    private function buildStateOptions(array $resource): ?Options
+    {
+        $stateOptions = $resource['stateOptions'] ?? [];
+        if (!\is_array($stateOptions)) {
+            return null;
+        }
+
+        if (!$stateOptions) {
+            return null;
+        }
+
+        $configuration = reset($stateOptions);
+        switch (key($stateOptions)) {
+            case 'elasticsearchOptions':
+                return new Options($configuration['index'] ?? null, $configuration['type'] ?? null);
+        }
+
+        return null;
     }
 }
